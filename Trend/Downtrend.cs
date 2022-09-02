@@ -9,18 +9,22 @@ public class Downtrend : ITrend
     private decimal _previousEma8 = decimal.MaxValue;
 
     private IEmaCrossDowntrend _emaCrossDowntrend;
-    public Downtrend(decimal candleLow, decimal candleClose)
+    public Downtrend(decimal candleLow, decimal candleClose, decimal previousUpperBollinger, decimal previousEma8)
     {
         _lowestLow = candleLow;
         _lowestClose = candleClose;
         _emaCrossDowntrend = new NoCrossDowntrend();
+        _previousEma8 = previousEma8;
+        _previousUpperBollinger = previousUpperBollinger;
     }
 
-    public Downtrend(int counter, decimal lowestLow, decimal lowestClose, IEmaCrossDowntrend _emaCrossDowntrend)
+    public Downtrend(int counter, decimal lowestLow, decimal lowestClose, IEmaCrossDowntrend _emaCrossDowntrend, decimal previousUpperBollinger, decimal previousEma8)
     {
         _counter = counter;
         _lowestLow = lowestLow;
         _lowestClose = lowestClose;
+        _previousEma8 = previousEma8;
+        _previousUpperBollinger = previousUpperBollinger;
         this._emaCrossDowntrend = _emaCrossDowntrend;
     }
 
@@ -45,38 +49,40 @@ public class Downtrend : ITrend
 
         if (lowerLow && lowerClose)
             if (pullback)
-                return new DowntrendPullback(candle.Low, candle.Close);
+                return new DowntrendPullback(candle.Low, candle.Close, indicators.BollingerBandTop, indicators.Ema8);
             else
-                return new Downtrend(candle.Low, candle.Close);
+                return new Downtrend(candle.Low, candle.Close, indicators.BollingerBandTop, indicators.Ema8);
 
         if (lowerLow)
             if (pullback)
-                return new DowntrendPullback(candle.Low, _lowestClose);
+                return new DowntrendPullback(candle.Low, _lowestClose, indicators.BollingerBandTop, indicators.Ema8);
             else
-                return new Downtrend(candle.Low, _lowestClose);
+                return new Downtrend(candle.Low, _lowestClose, indicators.BollingerBandTop, indicators.Ema8);
 
         if (lowerClose)
             if (pullback)
-                return new DowntrendPullback(_lowestLow, candle.Close);
+                return new DowntrendPullback(_lowestLow, candle.Close, indicators.BollingerBandTop, indicators.Ema8);
             else
-                return new Downtrend(_lowestLow, candle.Close);
+                return new Downtrend(_lowestLow, candle.Close, indicators.BollingerBandTop, indicators.Ema8);
 
         if (lowerTouch)
             if (pullback)
-                return new DowntrendPullback(_lowestLow, _lowestClose);
+                return new DowntrendPullback(_lowestLow, _lowestClose, indicators.BollingerBandTop, indicators.Ema8);
             else
-                return new Downtrend(_lowestLow, _lowestClose);
+                return new Downtrend(_lowestLow, _lowestClose, indicators.BollingerBandTop, indicators.Ema8);
 
         if (pullback)
-            return new DowntrendPullback(_counter + 1, _lowestLow, _lowestClose, _emaCrossDowntrend);
+            return new DowntrendPullback(_counter + 1, _lowestLow, _lowestClose, _emaCrossDowntrend, indicators.BollingerBandTop, indicators.Ema8);
 
-        return new Downtrend(_counter + 1, _lowestLow, _lowestClose, _emaCrossDowntrend);
+        return new Downtrend(_counter + 1, _lowestLow, _lowestClose, _emaCrossDowntrend, indicators.BollingerBandTop, indicators.Ema8);
     }
 
     public ITrend TickTransition(MarketTick tick)
     {
         if (tick.Ask >= _previousUpperBollinger)
             return new Range();
+        if (tick.Ask >= _previousEma8)
+            return new DowntrendPullback(_counter + 1, _lowestLow, _lowestClose, _emaCrossDowntrend, _previousUpperBollinger, _previousEma8);
         return this;
     }
 }

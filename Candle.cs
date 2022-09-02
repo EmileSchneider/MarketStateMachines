@@ -4,6 +4,19 @@
 
     public class Candle
     {
+        public Candle()
+        {
+
+        }
+        public Candle(DateTime openTime, decimal open, decimal high, decimal low, decimal close)
+        {
+            OpenTime = openTime;
+            Open = open;
+            High = high;
+            Low = low;
+            Close = close;
+        }
+
         public DateTime OpenTime { get; set; }
         public decimal Open { get; set; }
         public decimal High { get; set; }

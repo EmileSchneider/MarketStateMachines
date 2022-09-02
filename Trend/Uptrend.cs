@@ -10,20 +10,25 @@ public class Uptrend : ITrend
 
     private IEmaCrossUptrend _emaCrossUptrend;
 
-    public Uptrend(decimal highestHigh, decimal highestClose)
+    public Uptrend(decimal highestHigh, decimal highestClose, decimal previousBollingerBandBottomm, decimal previousEma8)
     {
         _counter = 0;
         _highestHigh = highestHigh;
         _highestClose = highestClose;
         _emaCrossUptrend = new NoCrossUptrend();
+        _previousEma8 = previousEma8;
+        _previousBollingerBottom = previousBollingerBandBottomm;
     }
 
-    public Uptrend(int counter, decimal highestHigh, decimal highestClose, IEmaCrossUptrend emaCrossUptrend)
+    public Uptrend(int counter, decimal highestHigh, decimal highestClose, IEmaCrossUptrend emaCrossUptrend, decimal previousBollingerBandBottom, decimal previousEma8)
     {
         _counter = counter;
         _highestHigh = highestHigh;
         _highestClose = highestClose;
         _emaCrossUptrend = emaCrossUptrend;
+        _previousBollingerBottom = previousBollingerBandBottom;
+        _previousEma8= previousEma8;
+
     }
 
     public ITrend CandleTransition(Candle candle, Indicators indicators)
@@ -46,33 +51,33 @@ public class Uptrend : ITrend
 
         if (higherHigh && higherClose)
             if (pullback)
-                return new UptrendPullback(candle.High, candle.Close);
+                return new UptrendPullback(candle.High, candle.Close, indicators.BollingerBandBottom, indicators.Ema8);
             else
-                return new Uptrend(candle.High, candle.Close);
+                return new Uptrend(candle.High, candle.Close, indicators.BollingerBandBottom, indicators.Ema8);
 
         if (higherHigh)
             if (pullback)
-                return new UptrendPullback(candle.High, _highestClose);
+                return new UptrendPullback(candle.High, _highestClose, indicators.BollingerBandBottom, indicators.Ema8);
             else
-                return new Uptrend(candle.High, _highestClose);
+                return new Uptrend(candle.High, _highestClose, indicators.BollingerBandBottom, indicators.Ema8);
 
         if (higherClose)
             if (pullback)
-                return new UptrendPullback(_highestHigh, candle.Close);
+                return new UptrendPullback(_highestHigh, candle.Close, indicators.BollingerBandBottom, indicators.Ema8);
             else
-                return new Uptrend(_highestHigh, candle.Close);
+                return new Uptrend(_highestHigh, candle.Close, indicators.BollingerBandBottom, indicators.Ema8);
 
         if (higherTouch)
             if (pullback)
-                return new UptrendPullback(_highestHigh, _highestClose);
+                return new UptrendPullback(_highestHigh, _highestClose, indicators.BollingerBandBottom, indicators.Ema8);
             else
-                return new Uptrend(_highestHigh, _highestClose);
+                return new Uptrend(_highestHigh, _highestClose, indicators.BollingerBandBottom, indicators.Ema8);
 
         if (pullback)
-            return new UptrendPullback(_counter + 1, _highestHigh, _highestClose, _emaCrossUptrend);
+            return new UptrendPullback(_counter + 1, _highestHigh, _highestClose, _emaCrossUptrend, indicators.BollingerBandBottom, indicators.Ema8);
 
 
-        return new Uptrend(_counter + 1, _highestHigh, _highestClose, _emaCrossUptrend);
+        return new Uptrend(_counter + 1, _highestHigh, _highestClose, _emaCrossUptrend, indicators.BollingerBandBottom, indicators.Ema8);
     }
 
     public ITrend TickTransition(MarketTick tick)
@@ -80,7 +85,7 @@ public class Uptrend : ITrend
         if (tick.Ask < _previousBollingerBottom)
             return new Range();
         if (tick.Ask < _previousEma8)
-            return new UptrendPullback(_counter, _highestHigh, _highestClose, _emaCrossUptrend);
+            return new UptrendPullback(_counter, _highestHigh, _highestClose, _emaCrossUptrend, _previousBollingerBottom, _previousEma8) ;
         return this;
     }
 }

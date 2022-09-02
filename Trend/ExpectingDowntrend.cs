@@ -23,19 +23,18 @@ public class ExpectingDowntrend : ITrend
     public ITrend CandleTransition(Candle candle, Indicators indicators)
     {
         var touchHigh = candle.High > indicators.BollingerBandTop;
-        var touchLow = candle.Low < indicators.BollingerBandBottom;
+        var pullback = candle.High > indicators.Ema8;
+
         if (touchHigh)
-        {
             return new ExpectingUptrend(candle.High, candle.Close);
-        }
 
         if (_counter == 20)
             return new Range();
 
         if (candle.Low < _low && candle.Close < _close)
-        {
-            return new Downtrend(candle.Low, candle.Close);
-        }
+            if (pullback)
+                return new DowntrendPullback(candle.Low, candle.Close, indicators.BollingerBandTop, indicators.Ema8);
+            return new Downtrend(candle.Low, candle.Close, indicators.BollingerBandTop, indicators.Ema8);
 
         return new ExpectingDowntrend(_counter + 1, _low, _close);
     }

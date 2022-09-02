@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketStateMachines", "Mark
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradingEngine", "..\TradingEngine\TradingEngine.csproj", "{4CD4B55F-99DE-4B94-B320-43FAFBC04938}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGround", "..\TestGround\TestGround.csproj", "{EB3DE19D-7021-4E20-8D53-15F81B52B69C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestGround", "..\TestGround\TestGround.csproj", "{EB3DE19D-7021-4E20-8D53-15F81B52B69C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculatorTests", "..\CalculatorTests\CalculatorTests.csproj", "{49E0BFBE-F688-432D-9EED-3194BD52BEB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "..\CalculatorTests\Tests.csproj", "{49E0BFBE-F688-432D-9EED-3194BD52BEB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

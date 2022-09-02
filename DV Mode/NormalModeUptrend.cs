@@ -10,14 +10,33 @@ namespace MarketStateMachines.DV_Mode
         private decimal highestClose;
 
         decimal highestAtr;
-        public NormalModeUptrend(ITrend trend, decimal lastAtr, decimal highestClose)
+
+        private ITrend fiveMinuteTrend;
+        private ITrend tenMinuteTrend;
+        public NormalModeUptrend(ITrend trend, decimal lastAtr, decimal highestClose, ITrend fiveMinuteTrend, ITrend tenMinuteTrend)
         {
             this.trend = trend;
             this.lastAtr = lastAtr;
             this.highestClose = highestClose;
             this.highestAtr = lastAtr;
+            this.fiveMinuteTrend = fiveMinuteTrend;
+            this.tenMinuteTrend = tenMinuteTrend;
         }
 
+        public void NewFiveMinute(Candle candle, Indicators indicators)
+        {
+            fiveMinuteTrend = fiveMinuteTrend.CandleTransition(candle, indicators);
+        }
+
+        public void NewTenMinute(Candle candle, Indicators indicators)
+        {
+            tenMinuteTrend = tenMinuteTrend.CandleTransition(candle, indicators);
+        }
+
+        private bool DowntrendMode()
+        {
+            return fiveMinuteTrend is Downtrend && tenMinuteTrend is Downtrend;
+        }
         public IDecreasingVolatilityMode Transition(Candle candle, Indicators indicators)
         {
             trend = trend.CandleTransition(candle, indicators);
@@ -26,12 +45,12 @@ namespace MarketStateMachines.DV_Mode
                 highestAtr = indicators.Atr14;
 
             if (!(trend is Uptrend))
-                return new NormalMode(trend, indicators.Atr14);
-            if (candle.Close > highestClose && indicators.Atr14 < lastAtr)
-                return new DecreasingVolatilityModeUptrend(trend, highestAtr,decimal.MaxValue,decimal.MaxValue, candle.Close, decimal.MaxValue);
+                return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
+            if (candle.Close > highestClose && indicators.Atr14 < lastAtr && !DowntrendMode())
+                return new DecreasingVolatilityModeUptrend(trend, highestAtr,decimal.MaxValue,decimal.MaxValue, candle.Close, decimal.MaxValue, fiveMinuteTrend, tenMinuteTrend);
             if (candle.Close > highestClose)
-                return new NormalModeUptrend(trend, indicators.Atr14, candle.Close);
-            return new NormalModeUptrend(trend, indicators.Atr14,highestClose );
+                return new NormalModeUptrend(trend, indicators.Atr14, candle.Close, fiveMinuteTrend, tenMinuteTrend);
+            return new NormalModeUptrend(trend, indicators.Atr14,highestClose, fiveMinuteTrend, tenMinuteTrend);
         }
     }
 }

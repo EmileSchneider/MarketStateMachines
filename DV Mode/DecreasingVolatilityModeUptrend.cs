@@ -13,8 +13,11 @@ namespace MarketStateMachines.DV_Mode
         private decimal highestClose;
         private decimal previousPreviousAtr;
 
+        private ITrend fiveMinuteTrend;
+        private ITrend tenMinuteTrend;
 
-        public DecreasingVolatilityModeUptrend(ITrend trend, decimal highestAtr14, decimal lastPivotTwoHigh, decimal previousAtr, decimal highestClose, decimal previousPreviousAtr)
+        private PivotTwoHighRecognizer pivotTwoHighRecognizer;
+        public DecreasingVolatilityModeUptrend(ITrend trend, decimal highestAtr14, decimal lastPivotTwoHigh, decimal previousAtr, decimal highestClose, decimal previousPreviousAtr, ITrend fiveMinuteTrend, ITrend tenMinuteTrend)
         {
             this.trend = trend;
             this.highestAtr14 = highestAtr14;
@@ -22,9 +25,32 @@ namespace MarketStateMachines.DV_Mode
             this.previousAtr = previousAtr;
             this.highestClose = highestClose;
             this.previousPreviousAtr = previousPreviousAtr;
+            this.fiveMinuteTrend = fiveMinuteTrend;
+            this.tenMinuteTrend = tenMinuteTrend;
+            this.pivotTwoHighRecognizer = new PivotTwoHighRecognizer();
+        }
+        public DecreasingVolatilityModeUptrend(ITrend trend, decimal highestAtr14, decimal lastPivotTwoHigh, decimal previousAtr, decimal highestClose, decimal previousPreviousAtr, ITrend fiveMinuteTrend, ITrend tenMinuteTrend, PivotTwoHighRecognizer pivotTwoHighRecognizer)
+        {
+            this.trend = trend;
+            this.highestAtr14 = highestAtr14;
+            this.lastPivotTwoHigh = lastPivotTwoHigh;
+            this.previousAtr = previousAtr;
+            this.highestClose = highestClose;
+            this.previousPreviousAtr = previousPreviousAtr;
+            this.fiveMinuteTrend = fiveMinuteTrend;
+            this.tenMinuteTrend = tenMinuteTrend;
+            this.pivotTwoHighRecognizer = pivotTwoHighRecognizer; 
+        }
+        public void NewFiveMinute(Candle candle, Indicators indicators)
+        {
+            fiveMinuteTrend = fiveMinuteTrend.CandleTransition(candle, indicators);
         }
 
-   
+        public void NewTenMinute(Candle candle, Indicators indicators)
+        {
+            tenMinuteTrend = tenMinuteTrend.CandleTransition(candle, indicators);
+        }
+
         public IDecreasingVolatilityMode Transition(Candle candle, Indicators indicators)
         {
             trend = trend.CandleTransition(candle, indicators);
@@ -36,31 +62,29 @@ namespace MarketStateMachines.DV_Mode
             if (indicators.Atr14 > highestAtr14)
             {
                 if (trend is Uptrend)
-                    return new NormalModeUptrend(trend, indicators.Atr14, highestClose);
+                    return new NormalModeUptrend(trend, indicators.Atr14, highestClose, fiveMinuteTrend, tenMinuteTrend);
                 if (trend is Downtrend)
-                    return new NormalModeDowntrend(trend, indicators.Atr14, candle.Close);
-                return new NormalMode(trend, indicators.Atr14);
+                    return new NormalModeDowntrend(trend, indicators.Atr14, candle.Close, fiveMinuteTrend, tenMinuteTrend);
+                return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
 
             }
 
             if (indicators.Atr14 > lastPivotTwoHigh)
             {
                 if (trend is Uptrend)
-                    return new NormalModeUptrend(trend, indicators.Atr14, highestClose);
+                    return new NormalModeUptrend(trend, indicators.Atr14, highestClose, fiveMinuteTrend,tenMinuteTrend);
                 if (trend is Downtrend)
-                    return new NormalModeDowntrend(trend, indicators.Atr14, candle.Close);
-                return new NormalMode(trend, indicators.Atr14);
+                    return new NormalModeDowntrend(trend, indicators.Atr14, candle.Close, fiveMinuteTrend, tenMinuteTrend);
+                return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
 
             }
 
-            if (previousAtr > indicators.Atr14 && previousPreviousAtr < indicators.Atr14)
-            {
-                lastPivotTwoHigh = previousAtr;
-            }
+            pivotTwoHighRecognizer.NewAtr(indicators.Atr14);
+            lastPivotTwoHigh = pivotTwoHighRecognizer.CurrentPivotTwoHigh(); 
 
             previousPreviousAtr = previousAtr;
             previousAtr = indicators.Atr14;
-            return new DecreasingVolatilityModeUptrend(trend, highestAtr14, lastPivotTwoHigh, previousAtr, highestClose, previousPreviousAtr);
+            return new DecreasingVolatilityModeUptrend(trend, highestAtr14, lastPivotTwoHigh, previousAtr, highestClose, previousPreviousAtr, fiveMinuteTrend, tenMinuteTrend, pivotTwoHighRecognizer);
         }
     }
 }
