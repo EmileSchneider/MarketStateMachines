@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MarketStateMachines
+namespace MarketStateMachines.Common
 {
     public class MarketTick
     {

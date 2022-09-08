@@ -1,4 +1,6 @@
-﻿namespace MarketStateMachines.Trend
+﻿using MarketStateMachines.Common;
+
+namespace MarketStateMachines.Trend
 {
     public class UptrendPullback : Uptrend 
     {

@@ -1,5 +1,5 @@
-﻿using MarketStateMachines.Trend;
-using TradingEngine.Loggers;
+﻿using MarketStateMachines.Common;
+using MarketStateMachines.Trend;
 
 namespace MarketStateMachines.DV_Mode
 {

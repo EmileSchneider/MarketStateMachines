@@ -1,5 +1,6 @@
-﻿using MarketStateMachines.Trend;
-using TradingEngine.Loggers;
+﻿using MarketStateMachines.Common;
+using MarketStateMachines.DV_Mode;
+using MarketStateMachines.Trend;
 
 namespace MarketStateMachines.DV_Mode
 {
@@ -16,7 +17,7 @@ namespace MarketStateMachines.DV_Mode
         private ITrend tenMinuteTrend;
 
         private PivotTwoHighRecognizer pivotTwoHighRecognizer;
-         public DecreasingVolatilityModeDowntrend(ITrend trend, decimal highestAtr14, decimal previousAtr14, decimal previousPreviousAtr14, decimal lastPivotTwoHigh, decimal lowestClosel, ITrend fiveMinuteTrend, ITrend tenMinuteTrend)
+        public DecreasingVolatilityModeDowntrend(ITrend trend, decimal highestAtr14, decimal previousAtr14, decimal previousPreviousAtr14, decimal lastPivotTwoHigh, decimal lowestClose, ITrend fiveMinuteTrend, ITrend tenMinuteTrend)
         {
             this.trend = trend;
             this.highestAtr14 = highestAtr14;
@@ -27,9 +28,9 @@ namespace MarketStateMachines.DV_Mode
             this.fiveMinuteTrend = fiveMinuteTrend;
             this.tenMinuteTrend = tenMinuteTrend;
 
-            this.pivotTwoHighRecognizer = new PivotTwoHighRecognizer();
+            pivotTwoHighRecognizer = new PivotTwoHighRecognizer();
         }
-       public DecreasingVolatilityModeDowntrend(ITrend trend, decimal highestAtr14, decimal previousAtr14, decimal previousPreviousAtr14, decimal lastPivotTwoHigh, decimal lowestClosel, ITrend fiveMinuteTrend, ITrend tenMinuteTrend, PivotTwoHighRecognizer pivotTwoHighRecognizer)
+        public DecreasingVolatilityModeDowntrend(ITrend trend, decimal highestAtr14, decimal previousAtr14, decimal previousPreviousAtr14, decimal lastPivotTwoHigh, decimal lowestClose, ITrend fiveMinuteTrend, ITrend tenMinuteTrend, PivotTwoHighRecognizer pivotTwoHighRecognizer)
         {
             this.trend = trend;
             this.highestAtr14 = highestAtr14;
@@ -40,7 +41,7 @@ namespace MarketStateMachines.DV_Mode
             this.fiveMinuteTrend = fiveMinuteTrend;
             this.tenMinuteTrend = tenMinuteTrend;
 
-            this.pivotTwoHighRecognizer = pivotTwoHighRecognizer; 
+            this.pivotTwoHighRecognizer = pivotTwoHighRecognizer;
         }
 
 
@@ -57,6 +58,7 @@ namespace MarketStateMachines.DV_Mode
         public IDecreasingVolatilityMode Transition(Candle candle, Indicators indicators)
         {
             trend = trend.CandleTransition(candle, indicators);
+
             if (candle.Close < lowestClose)
                 lowestClose = candle.Close;
 
@@ -64,16 +66,20 @@ namespace MarketStateMachines.DV_Mode
             {
                 if (trend is Downtrend)
                     return new NormalModeDowntrend(trend, indicators.Atr14, lowestClose, fiveMinuteTrend, tenMinuteTrend);
+
                 if (trend is Uptrend)
                     return new NormalModeUptrend(trend, indicators.Atr14, lowestClose, fiveMinuteTrend, tenMinuteTrend);
+
                 return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
             }
             if (indicators.Atr14 > lastPivotTwoHigh)
             {
                 if (trend is Downtrend)
                     return new NormalModeDowntrend(trend, indicators.Atr14, lowestClose, fiveMinuteTrend, tenMinuteTrend);
+
                 if (trend is Uptrend)
                     return new NormalModeUptrend(trend, indicators.Atr14, lowestClose, fiveMinuteTrend, tenMinuteTrend);
+
                 return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
             }
 
@@ -82,7 +88,8 @@ namespace MarketStateMachines.DV_Mode
 
             previousPreviousAtr = previousAtr;
             previousAtr = indicators.Atr14;
-            return new DecreasingVolatilityModeDowntrend(trend, highestAtr14, previousAtr, previousPreviousAtr, lastPivotTwoHigh, lowestClose, fiveMinuteTrend,tenMinuteTrend, pivotTwoHighRecognizer);
+
+            return new DecreasingVolatilityModeDowntrend(trend, highestAtr14, previousAtr, previousPreviousAtr, lastPivotTwoHigh, lowestClose, fiveMinuteTrend, tenMinuteTrend, pivotTwoHighRecognizer);
         }
     }
 }

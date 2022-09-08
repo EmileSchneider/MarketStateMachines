@@ -1,4 +1,6 @@
-﻿namespace MarketStateMachines.MeanReversion
+﻿using MarketStateMachines.Common;
+
+namespace MarketStateMachines.MeanReversion
 {
     public class ShortSetupRTV : IMeanReversion
     {

@@ -1,4 +1,6 @@
-﻿namespace MarketStateMachines.BollingerWalk
+﻿using MarketStateMachines.Common;
+
+namespace MarketStateMachines.BollingerWalk
 {
     public class BollingerWalkUp : IBollingerWalk
     {

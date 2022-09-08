@@ -1,4 +1,4 @@
-﻿namespace MarketStateMachines
+﻿namespace MarketStateMachines.Common
 {
 
 
@@ -29,7 +29,7 @@
             var body = Math.Abs(Open - Close);
             var wick = Math.Min(Open, Close) - Low;
             if (body * 2 <= wick)
-                if (Close > ((High + Low) / 2))
+                if (Close > (High + Low) / 2)
                     return true;
             return false;
         }
@@ -40,7 +40,7 @@
             var wick = High - Math.Max(Open, Close);
 
             if (body * 2 <= wick)
-                if (Close < ((High + Low) / 2))
+                if (Close < (High + Low) / 2)
                     return true;
             return false;
         }

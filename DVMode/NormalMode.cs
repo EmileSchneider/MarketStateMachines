@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketStateMachines.Common;
 using MarketStateMachines.Trend;
-using TradingEngine.Loggers;
 
 namespace MarketStateMachines.DV_Mode
 {

@@ -1,22 +1,22 @@
-﻿using MarketStateMachines.Trend;
-using TradingEngine.Loggers;
+﻿using MarketStateMachines.Common;
+using MarketStateMachines.Trend;
 
 namespace MarketStateMachines.DV_Mode
 {
     public class DecreasingVolatilityModeUptrend : IDecreasingVolatilityMode
     {
-        private ITrend trend;
-        private decimal highestAtr14;
+        ITrend trend;
+        decimal highestAtr14;
 
-        private decimal lastPivotTwoHigh;
-        private decimal previousAtr;
-        private decimal highestClose;
-        private decimal previousPreviousAtr;
+        decimal lastPivotTwoHigh;
+        decimal previousAtr;
+        decimal highestClose;
+        decimal previousPreviousAtr;
 
-        private ITrend fiveMinuteTrend;
-        private ITrend tenMinuteTrend;
+        ITrend fiveMinuteTrend;
+        ITrend tenMinuteTrend;
 
-        private PivotTwoHighRecognizer pivotTwoHighRecognizer;
+        PivotTwoHighRecognizer pivotTwoHighRecognizer;
         public DecreasingVolatilityModeUptrend(ITrend trend, decimal highestAtr14, decimal lastPivotTwoHigh, decimal previousAtr, decimal highestClose, decimal previousPreviousAtr, ITrend fiveMinuteTrend, ITrend tenMinuteTrend)
         {
             this.trend = trend;
@@ -63,20 +63,22 @@ namespace MarketStateMachines.DV_Mode
             {
                 if (trend is Uptrend)
                     return new NormalModeUptrend(trend, indicators.Atr14, highestClose, fiveMinuteTrend, tenMinuteTrend);
+
                 if (trend is Downtrend)
                     return new NormalModeDowntrend(trend, indicators.Atr14, candle.Close, fiveMinuteTrend, tenMinuteTrend);
-                return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
 
+                return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
             }
 
             if (indicators.Atr14 > lastPivotTwoHigh)
             {
                 if (trend is Uptrend)
                     return new NormalModeUptrend(trend, indicators.Atr14, highestClose, fiveMinuteTrend,tenMinuteTrend);
+
                 if (trend is Downtrend)
                     return new NormalModeDowntrend(trend, indicators.Atr14, candle.Close, fiveMinuteTrend, tenMinuteTrend);
-                return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
 
+                return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
             }
 
             pivotTwoHighRecognizer.NewAtr(indicators.Atr14);
@@ -84,6 +86,7 @@ namespace MarketStateMachines.DV_Mode
 
             previousPreviousAtr = previousAtr;
             previousAtr = indicators.Atr14;
+
             return new DecreasingVolatilityModeUptrend(trend, highestAtr14, lastPivotTwoHigh, previousAtr, highestClose, previousPreviousAtr, fiveMinuteTrend, tenMinuteTrend, pivotTwoHighRecognizer);
         }
     }

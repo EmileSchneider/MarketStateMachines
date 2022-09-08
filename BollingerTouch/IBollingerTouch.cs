@@ -1,4 +1,6 @@
-﻿namespace MarketStateMachines.BollingerTouch
+﻿using MarketStateMachines.Common;
+
+namespace MarketStateMachines.BollingerTouch
 {
     public interface IBollingerTouch
     {

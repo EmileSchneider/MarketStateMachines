@@ -1,9 +1,9 @@
-﻿using MarketStateMachines.Trend;
-using TradingEngine.Loggers;
+﻿using MarketStateMachines.Common;
+using MarketStateMachines.Trend;
 
 namespace MarketStateMachines.DV_Mode
 {
-    internal class NormalModeUptrend : IDecreasingVolatilityMode
+    public class NormalModeUptrend : IDecreasingVolatilityMode
     {
         private ITrend trend;
         private decimal lastAtr;

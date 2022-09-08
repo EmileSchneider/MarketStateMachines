@@ -1,4 +1,4 @@
-﻿namespace MarketStateMachines
+﻿namespace MarketStateMachines.Common
 {
 
     public class Indicators
