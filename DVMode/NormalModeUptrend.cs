@@ -46,10 +46,13 @@ namespace MarketStateMachines.DV_Mode
 
             if (!(trend is Uptrend))
                 return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
+
             if (candle.Close > highestClose && indicators.Atr14 < lastAtr && !DowntrendMode())
                 return new DecreasingVolatilityModeUptrend(trend, highestAtr,decimal.MaxValue,decimal.MaxValue, candle.Close, decimal.MaxValue, fiveMinuteTrend, tenMinuteTrend);
+
             if (candle.Close > highestClose)
                 return new NormalModeUptrend(trend, indicators.Atr14, candle.Close, fiveMinuteTrend, tenMinuteTrend);
+
             return new NormalModeUptrend(trend, indicators.Atr14,highestClose, fiveMinuteTrend, tenMinuteTrend);
         }
     }

@@ -48,18 +48,16 @@ namespace MarketStateMachines.DV_Mode
 
             if (indicators.Atr14 > highestAtr)
                 highestAtr = indicators.Atr14;
+
             if (!(trend is Downtrend))
-            {
                 return new NormalMode(trend, indicators.Atr14, fiveMinuteTrend, tenMinuteTrend);
-            }
+
             if (candle.Close < lowestClose && indicators.Atr14 < lastAtr && !UptrendMode())
-            {
                 return new DecreasingVolatilityModeDowntrend(trend, highestAtr, decimal.MaxValue, decimal.MaxValue, decimal.MaxValue, candle.Close, fiveMinuteTrend, tenMinuteTrend);
-            }
+
             if (candle.Close < lowestClose)
-            {
                 return new NormalModeDowntrend(trend, indicators.Atr14, candle.Close, fiveMinuteTrend, tenMinuteTrend);
-            }
+
             return new NormalModeDowntrend(trend, indicators.Atr14, lowestClose, fiveMinuteTrend, tenMinuteTrend);
         }
     }
