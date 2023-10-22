@@ -1,6 +1,1 @@
-﻿# HELLO???
-
-## DOE
-
-wtf
-
+# Market State Machines
